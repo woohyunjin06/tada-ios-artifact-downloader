@@ -21,10 +21,10 @@ struct ArtifactDownloader {
         )
         let s3 = S3(client: client, region: .apnortheast2)
         
-        _ = await (
+        _ = await [
             download(key: "reCAPTCHA", into: "reCAPTCHA/", from: s3),
             download(key: "GoogleMaps", into: "GoogleMaps/", from: s3)
-        )
+        ]
         print("All downloading completed successfully")
         try? client.syncShutdown()
     }
@@ -34,7 +34,7 @@ struct ArtifactDownloader {
         do {
             print("Downloading \(key) artifact to \(path)")
             try await s3FileTransfer.copy(
-                from: S3Folder(url: "s3://\(bucket)/reCAPTCHA/")!,
+                from: S3Folder(url: "s3://\(bucket)/\(key)/")!,
                 to: path
             )
             print("Download \(key) completed successfully")
