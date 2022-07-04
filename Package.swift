@@ -7,7 +7,7 @@ let package = Package(
     platforms: [.macOS(.v11)],
     products: [
         .executable(
-            name: "tuist-download-artifact",
+            name: "tuist-artifact-downloader",
             targets: ["ArtifactDownloader"]
         )
     ],
