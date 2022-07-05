@@ -5,10 +5,11 @@
 //  Created by HyunJin on 2022/07/04.
 //
 
+import Foundation
+
 import ProjectAutomation
 import SotoS3
 import SotoS3FileTransfer
-import Foundation
 import AsyncHTTPClient
 
 @main
@@ -33,14 +34,14 @@ struct ArtifactDownloader {
     static func download(key: String, into path: String, from s3: S3) async {
         let s3FileTransfer = S3FileTransferManager(s3: s3, threadPoolProvider: .createNew)
         do {
-            print("Downloading \(key) artifact to \(path)")
+            print("Downloading \(key) artifact to path '\(path)'")
             try await s3FileTransfer.copy(
                 from: S3Folder(url: "s3://\(bucket)/\(key)/")!,
                 to: path
             )
             print("Download \(key) completed successfully")
         } catch {
-            print("Download \(key) artifact failed: \(error)")
+            print("Download artifact  \(key) failed: \(error)")
         }
     }
 }
