@@ -9,6 +9,7 @@ import ProjectAutomation
 import SotoS3
 import SotoS3FileTransfer
 import Foundation
+import AsyncHTTPClient
 
 @main
 struct ArtifactDownloader {
@@ -19,12 +20,12 @@ struct ArtifactDownloader {
             credentialProvider: .environment,
             httpClientProvider: .createNew
         )
-        let s3 = S3(client: client, region: .apnortheast2)
+        let s3 = S3(client: client, region: .apnortheast2, timeout: .minutes(10))
         
-        _ = await [
-            download(key: "reCAPTCHA", into: "reCAPTCHA/", from: s3),
-            download(key: "GoogleMaps", into: "GoogleMaps/", from: s3)
-        ]
+        async let reCAPTCHA: Void = download(key: "reCAPTCHA", into: "reCAPTCHA/", from: s3)
+        async let GoogleMaps: Void = download(key: "GoogleMaps", into: "GoogleMaps/", from: s3)
+                  
+        _ = await [reCAPTCHA, GoogleMaps]
         print("All downloading completed successfully")
         try? client.syncShutdown()
     }
@@ -39,7 +40,7 @@ struct ArtifactDownloader {
             )
             print("Download \(key) completed successfully")
         } catch {
-            print("Downloading \(key) artifact failed: \(error)")
+            print("Download \(key) artifact failed: \(error)")
         }
     }
 }
