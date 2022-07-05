@@ -25,13 +25,17 @@ struct ArtifactDownloader {
         
         async let reCAPTCHA: Void = download(key: "reCAPTCHA", into: "reCAPTCHA/", from: s3)
         async let GoogleMaps: Void = download(key: "GoogleMaps", into: "GoogleMaps/", from: s3)
-                  
-        _ = await [reCAPTCHA, GoogleMaps]
-        print("All downloading completed successfully")
+        
+        do {
+            _ = try await [reCAPTCHA, GoogleMaps]
+            print("All downloading completed successfully")
+        } catch {
+            print("Download artifact failed")
+        }
         try? client.syncShutdown()
     }
     
-    static func download(key: String, into path: String, from s3: S3) async {
+    static func download(key: String, into path: String, from s3: S3) async throws {
         let s3FileTransfer = S3FileTransferManager(s3: s3, threadPoolProvider: .createNew)
         do {
             print("Downloading \(key) artifact to path '\(path)'")
@@ -41,7 +45,8 @@ struct ArtifactDownloader {
             )
             print("Download \(key) completed successfully")
         } catch {
-            print("Download artifact  \(key) failed: \(error)")
+            print("Download artifact \(key) failed: \(error)")
+            throw error
         }
     }
 }
